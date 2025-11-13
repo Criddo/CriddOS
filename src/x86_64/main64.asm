@@ -3,8 +3,7 @@ extern kernel_main
 
 section .text
 bits 64
-long_mode_start:
-    ; load null into all data segment registers
+long_mode_start: ; set all segment registers to null
     mov ax, 0
     mov ss, ax
     mov ds, ax
@@ -12,5 +11,6 @@ long_mode_start:
     mov fs, ax
     mov gs, ax
 
-	call kernel_main
+
+    call kernel_main
 	hlt

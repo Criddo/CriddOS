@@ -1,8 +1,21 @@
-global start
-extern long_mode_start ;jump to 64-bit assembly code
+section .multiboot_header
+align 8
+header_start:
+    dd 0xe85250d6 ; signals multiboot2
+    dd 0 ; protected mode for i386 architecture
+    dd header_end - header_start ; header length
+    dd -(0xe85250d6 + 0 + (header_end - header_start)) ; checksum
+
+    ; end tag
+    dd 0 ; tag type
+    dd 8 ;size of tag
+header_end:
 
 section .text
 bits 32
+global start
+extern long_mode_start ;jump to 64-bit assembly code
+
 start:
 	mov esp, stack_top ; address of the top of the stack
 
@@ -54,8 +67,8 @@ check_long_mode: ; check whether CPU ID supports extended processor info
 	cpuid
 	test edx, 1 << 29 ; if lm bit (bit 29) is set, long mode is available
 	jz .no_long_mode
-
 	ret
+
 .no_long_mode:
 	mov al, "L" ; print L error message
 	jmp error ; jump to error instructions
@@ -123,7 +136,7 @@ page_table_l3:
 page_table_l2:
 	resb 4096
 stack_bottom:
-	resb 4096 * 4
+	resb (4096 * 4)
 stack_top:
 
 section .rodata ; read-only data section
@@ -134,4 +147,3 @@ gdt64: ; create global descriptor table, which is required to enter 64 bit mode
 .pointer: ; pointer to the GDT
 	dw $ - gdt64 - 1 ; length is current memory address minus start of table
 	dq gdt64 ; store the address of the pointer using the gdt64 label
-

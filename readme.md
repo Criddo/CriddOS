@@ -12,9 +12,7 @@ sudo docker build buildenv -t myos-buildenv
 sudo docker run --rm -it -v "$(pwd)":/root/env myos-buildenv
 make all
 exit
-qemu-system-x86_64 \
-    -cdrom dist/x86_64/kernel.iso \
-    -drive file=disk.img,format=raw,if=ide`
+qemu-system-x86_64 -cdrom dist/x86_64/kernel.iso -drive file=disk.img,format=raw,if=ide
 ```
 
 ---BOOTLOADER---
